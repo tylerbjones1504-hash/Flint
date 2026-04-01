@@ -1,0 +1,26 @@
+{
+  "name": "flint",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Flint — compatibility-first dating app. Strike something real.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:reset": "supabase db reset",
+    "supabase:types": "supabase gen types typescript --local > src/types/database.ts",
+    "supabase:migrate": "supabase db push"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.4",
+    "@supabase/ssr": "^0.6.1"
+  },
+  "devDependencies": {
+    "supabase": "^2.22.6",
+    "typescript": "^5.8.3"
+  }
+}
