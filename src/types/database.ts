@@ -38,20 +38,15 @@ export type SexualOrientation =
 
 export type RelationshipGoal = "serious" | "casual" | "open" | "not_sure";
 
-export type MonogamyPreference =
-  | "strictly_monogamous"
-  | "open_to_discussing"
-  | "non_monogamous";
-
+/** Top-level faith groups (optional subgroup on `profiles.faith_subgroup`, app-validated). */
 export type FaithTradition =
   | "not_religious"
-  | "spiritual_not_religious"
+  | "spiritual"
   | "christian"
-  | "jewish"
   | "muslim"
+  | "jewish"
   | "hindu"
-  | "buddhist"
-  | "other";
+  | "buddhist";
 
 export type PreferenceImportance = "dealbreaker" | "important" | "not_important";
 
@@ -108,8 +103,8 @@ export interface Profile {
   relationship_goal: RelationshipGoal;
   faith: FaithTradition;
   faith_importance: PreferenceImportance;
+  faith_subgroup_id: string | null;
   politics: PoliticsSpectrum;
-  monogamy_preference: MonogamyPreference;
   school: string | null;
   job_title: string | null;
   company: string | null;
@@ -136,6 +131,16 @@ export interface ProfilePhoto {
   is_primary: boolean;
   width: number | null;
   height: number | null;
+}
+
+export interface FaithSubgroup {
+  id: string;
+  created_at: string;
+  parent_faith: FaithTradition;
+  slug: string;
+  label: string;
+  sort_order: number;
+  is_active: boolean;
 }
 
 export interface PromptTemplate {
@@ -168,13 +173,13 @@ export interface UserPreferences {
   preferred_genders: Gender[];
   dealbreaker_goals: RelationshipGoal[];
   dealbreaker_faith: FaithTradition[];
-  dealbreaker_monogamy: MonogamyPreference[];
   dealbreaker_politics: PoliticsSpectrum[];
   weight_faith: number;
   weight_politics: number;
   weight_relationship_goal: number;
-  weight_monogamy: number;
   weight_lifestyle: number;
+  weight_values: number;
+  weight_distance: number;
 }
 
 export interface Like {
@@ -194,7 +199,7 @@ export interface Match {
   profile_id_2: string;
   compatibility_score: number;
   flame_tier: FlameTier;
-  first_mover_id: string | null;
+  nudged_profile_id: string | null;
   is_active: boolean;
   unmatched_by: string | null;
   unmatched_at: string | null;
@@ -303,8 +308,10 @@ export interface Database {
     Tables: {
       profiles: {
         Row: Profile;
-        Insert: Omit<Profile, "created_at" | "updated_at"> &
-          Partial<Pick<Profile, "created_at" | "updated_at">>;
+        Insert: Omit<Profile, "created_at" | "updated_at" | "faith_subgroup_id"> &
+          Partial<
+            Pick<Profile, "created_at" | "updated_at" | "faith_subgroup_id">
+          >;
         Update: Partial<Omit<Profile, "id">>;
       };
       profile_photos: {
@@ -312,6 +319,12 @@ export interface Database {
         Insert: Omit<ProfilePhoto, "id" | "created_at"> &
           Partial<Pick<ProfilePhoto, "id" | "created_at">>;
         Update: Partial<Omit<ProfilePhoto, "id" | "profile_id">>;
+      };
+      faith_subgroups: {
+        Row: FaithSubgroup;
+        /** Seeded / service-role only — no client INSERT policy. */
+        Insert: never;
+        Update: never;
       };
       prompt_templates: {
         Row: PromptTemplate;
@@ -327,8 +340,16 @@ export interface Database {
       };
       user_preferences: {
         Row: UserPreferences;
-        Insert: Omit<UserPreferences, "id" | "updated_at"> &
-          Partial<Pick<UserPreferences, "id" | "updated_at">>;
+        Insert: Omit<
+          UserPreferences,
+          "id" | "updated_at" | "weight_values" | "weight_distance"
+        > &
+          Partial<
+            Pick<
+              UserPreferences,
+              "id" | "updated_at" | "weight_values" | "weight_distance"
+            >
+          >;
         Update: Partial<Omit<UserPreferences, "id" | "profile_id">>;
       };
       likes: {
@@ -386,7 +407,7 @@ export interface Database {
           Partial<Pick<SparkCreditTransaction, "id" | "created_at">>;
         Update: never;
       };
-      premium_unlocks: {
+      flint_premium_unlocks: {
         Row: PremiumUnlock;
         Insert: Omit<PremiumUnlock, "id" | "purchased_at"> &
           Partial<Pick<PremiumUnlock, "id" | "purchased_at">>;
@@ -412,7 +433,7 @@ export interface Database {
           p_a: string;
           p_b: string;
           p_score: number;
-          p_first_mover?: string | null;
+          p_nudged_profile?: string | null;
         };
         Returns: string;
       };
@@ -425,7 +446,6 @@ export interface Database {
       gender: Gender;
       sexual_orientation: SexualOrientation;
       relationship_goal: RelationshipGoal;
-      monogamy_preference: MonogamyPreference;
       faith_tradition: FaithTradition;
       preference_importance: PreferenceImportance;
       politics_spectrum: PoliticsSpectrum;

@@ -1,0 +1,16 @@
+---
+description: Testing, QA, and verification expectations for Flint
+globs: "**/*.{test,spec}.{ts,tsx}"
+alwaysApply: false
+---
+
+# Testing rules
+
+- Add or update tests when **meaningful logic** changes (matching, scoring, auth helpers, data transforms).
+- Prefer tests that assert **behavior**, not implementation trivia.
+- After substantial changes, run **lint**, **typecheck**, and **tests** as documented in `COMMANDS.md` (fill in test commands when the suite exists).
+- Do not leave tests **brittle** on layout text or CSS class names unless that is the explicit contract.
+
+When editing non-test code with risky logic, consider adding tests in the same change if the project already has a pattern for it.
+
+See also: `CODE_STYLE.md`, `PR_REVIEW.md`, `COMMANDS.md`.

@@ -1,0 +1,16 @@
+---
+description: Mobile-first UI, layout, accessibility, and interaction patterns
+globs: "**/*.{tsx,ts,css}"
+alwaysApply: false
+---
+
+# Mobile UI rules
+
+- Design and implement **mobile-first**; scale up thoughtfully for larger viewports.
+- Preserve **accessible tap targets** and readable typography.
+- Handle **loading, empty, and error** states explicitly in UI.
+- Keep components **presentational** where practical; wire state at boundaries.
+- Favor **simple components** and clear state ownership over nested cleverness.
+- Match existing spacing, typography, and patterns in nearby files before introducing new visual systems.
+
+See also: `CODE_STYLE.md`, `AGENTS.md`.

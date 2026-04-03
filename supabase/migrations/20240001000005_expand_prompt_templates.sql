@@ -1,0 +1,37 @@
+-- Minimum 15 Flint-branded + 15 standard prompt templates (idempotent adds)
+
+INSERT INTO prompt_templates (prompt_text, is_flint_branded, display_order) VALUES
+('The boundary that actually makes me feel safe is...', TRUE, 7),
+('Something small you''d notice if we met in person...', TRUE, 8),
+('I feel most like myself when...', TRUE, 9),
+('A story I don''t tell everyone, but would here...', TRUE, 10),
+('What "slow" looks like for me in dating...', TRUE, 11),
+('The kind of conflict I handle well vs. badly...', TRUE, 12),
+('What I''m trying to unlearn about relationships...', TRUE, 13),
+('How I show I''m interested without playing games...', TRUE, 14),
+('The non-negotiable for emotional safety with me...', TRUE, 15),
+('If we vibed, you''d probably text me about...', TRUE, 16),
+('What I''d want you to know before the first date...', TRUE, 17),
+('My relationship with alone time looks like...', TRUE, 18),
+('I''m proud of how I''ve grown in the last few years because...', TRUE, 19),
+('The compliment that would actually land with me...', TRUE, 20),
+('What I mean when I say I want something real...', TRUE, 21),
+
+('A book or film that changed how I see love...', FALSE, 24),
+('My friends would describe me as...', FALSE, 25),
+('The first concert I''d want us to go to...', FALSE, 26),
+('A skill I''m currently learning...', FALSE, 27),
+('My relationship with my family in one sentence...', FALSE, 28),
+('The hill I will die on (nicely)...', FALSE, 29),
+('What I''m like when I''m stressed vs. when I''m happy...', FALSE, 30),
+('A tradition I want to keep or start...', FALSE, 31),
+('The last time I changed my mind about something big...', FALSE, 32),
+('How I recharge after a long week...', FALSE, 33),
+('A song that''s been on repeat lately...', FALSE, 34),
+('What "home" means to me right now...', FALSE, 35),
+('I''m secretly good at...', FALSE, 36),
+('A date idea that sounds perfect to me...', FALSE, 37),
+('The thing I''m optimizing my life around this year...', FALSE, 38),
+('What respect looks like in how we communicate...', FALSE, 39),
+('I''m trying to be more intentional about...', FALSE, 40)
+ON CONFLICT (prompt_text) DO NOTHING;

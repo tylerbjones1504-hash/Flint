@@ -302,7 +302,7 @@ CREATE POLICY "credit transactions: read own"
   USING (profile_id = auth.uid());
 
 -- ============================================================
--- PREMIUM UNLOCKS
+-- PREMIUM UNLOCKS (renamed to flint_premium_unlocks in migration 004)
 -- ============================================================
 ALTER TABLE premium_unlocks ENABLE ROW LEVEL SECURITY;
 

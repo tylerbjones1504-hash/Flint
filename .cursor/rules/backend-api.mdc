@@ -1,0 +1,17 @@
+---
+description: Supabase, API, auth, data access, and schema conventions
+globs: "**/{supabase,src/lib,src/types}/**"
+alwaysApply: false
+---
+
+# Backend and data rules
+
+- **Ask before** editing database schema, migrations, or auth flows (per `AGENTS.md`).
+- Prefer **typed** contracts; keep generated types (e.g. Supabase) in sync when schema changes.
+- Keep **business logic** out of raw query strings where a shared module fits existing patterns.
+- Treat **RLS and policies** as part of the feature: changes must preserve user isolation and intended access.
+- Do **not** commit secrets, tokens, or `.env` values; use `.env.example` for documented placeholders.
+- **Never** delete migration history without explicit approval.
+- When adding APIs or clients, match **existing** `src/lib` and Supabase usage before new abstractions.
+
+See also: `ARCHITECTURE_NOTES.md`, `COMMANDS.md`.
