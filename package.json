@@ -12,6 +12,8 @@
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:reset": "supabase db reset",
+    "db:validate": "supabase db reset && tsc --noEmit",
+    "db:validate:full": "supabase db reset && supabase gen types typescript --local > src/types/database.ts && tsc --noEmit",
     "supabase:types": "supabase gen types typescript --local > src/types/database.ts",
     "supabase:migrate": "supabase db push"
   },

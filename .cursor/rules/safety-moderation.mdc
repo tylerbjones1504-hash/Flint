@@ -1,0 +1,15 @@
+---
+description: Privacy, moderation, reporting, blocking, and abuse prevention
+alwaysApply: true
+---
+
+# Safety and moderation rules
+
+- **Do not** remove or weaken moderation, blocking, reporting, or privacy flows without explicit approval.
+- **Do not** disable analytics, audit, or compliance-related events if they already exist—get approval first.
+- Avoid exposing **more identity or location** than the product requires; default to conservative visibility.
+- Consider **abuse vectors**: spam, harassment, impersonation, ban evasion, and contact after opt-out.
+- Ensure sensitive data is **not** logged or sent to analytics inappropriately.
+- When touching matching, messaging, profiles, or visibility, use **`SAFETY_CHECKLIST.md`** as a mental pass before finishing.
+
+See also: `AGENTS.md`, `SAFETY_CHECKLIST.md`.

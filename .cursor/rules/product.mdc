@@ -1,0 +1,17 @@
+---
+description: Flint product priorities, goals, and UX constraints for dating
+alwaysApply: true
+---
+
+# Product rules
+
+- Safety and trust come before growth hacks or engagement tricks.
+- Prefer clarity over cleverness in flows, copy, and UI.
+- Optimize for fast time-to-value after signup (meaningful match path).
+- Use inclusive, respectful language; avoid cringe or pressure tactics.
+- Do not use dark patterns for boosts, subscriptions, or matches.
+- Every feature should support trust, retention, or meaningful matches—or question whether it belongs.
+- Reduce unnecessary profile friction; keep onboarding focused on trust, profile quality, and first-match speed.
+- Respect user intent; do not invent hidden product decisions—ask when requirements are unclear.
+
+See also: `AGENTS.md`, `PROJECT_OVERVIEW.md`.
