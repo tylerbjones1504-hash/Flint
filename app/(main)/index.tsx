@@ -107,10 +107,6 @@ export default function Discover() {
 
   const currentCandidate = candidates[currentIndex] ?? null;
 
-  function getAge(birthDate: string): number {
-    return Math.floor((Date.now() - new Date(birthDate).getTime()) / (1000 * 60 * 60 * 24 * 365.25));
-  }
-
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background }}>
@@ -236,68 +232,70 @@ function CardView({
 
   return (
     <GestureDetector gesture={panGesture}>
-      <Animated.View style={[styles.cardContainer, cardAnimStyle]}>
-        {/* Photo area (placeholder) */}
-        <View style={[styles.photoArea, { backgroundColor: '#1A1A1C' }]} />
+      <View>
+        <Animated.View style={[styles.cardContainer, cardAnimStyle]}>
+          {/* Photo area (placeholder) */}
+          <View style={[styles.photoArea, { backgroundColor: '#1A1A1C' }]} />
 
-        {/* Bottom overlay with gradient */}
-        <LinearGradient
-          colors={['transparent', 'rgba(0,0,0,0.85)']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={styles.gradientOverlay}
-        />
+          {/* Bottom overlay with gradient */}
+          <LinearGradient
+            colors={['transparent', 'rgba(0,0,0,0.85)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={styles.gradientOverlay}
+          />
 
-        {/* Profile info on overlay */}
-        <View style={styles.profileInfo}>
-          <Text style={[styles.nameAge, { color: '#FFFFFF' }]}>
-            {candidate.display_name}, {getAge(candidate.birth_date)}
-          </Text>
-
-          {candidate.location_city && (
-            <Text style={[styles.city, { color: 'rgba(255,255,255,0.65)' }]}>
-              {candidate.location_city}
+          {/* Profile info on overlay */}
+          <View style={styles.profileInfo}>
+            <Text style={[styles.nameAge, { color: '#FFFFFF' }]}>
+              {candidate.display_name}, {getAge(candidate.birth_date)}
             </Text>
-          )}
 
-          {tier && (
-            <View style={[styles.tierBadge, { backgroundColor: 'rgba(255,255,255,0.12)' }]}>
-              <FlameIcon tier={tier} size={14} />
-              <Caption style={{ marginLeft: 6, color: '#FFFFFF' }}>
-                {FLAME_TIER_LABELS[tier]}
-              </Caption>
-            </View>
-          )}
+            {candidate.location_city && (
+              <Text style={[styles.city, { color: 'rgba(255,255,255,0.65)' }]}>
+                {candidate.location_city}
+              </Text>
+            )}
+
+            {tier && (
+              <View style={[styles.tierBadge, { backgroundColor: 'rgba(255,255,255,0.12)' }]}>
+                <FlameIcon tier={tier} size={14} />
+                <Caption style={{ marginLeft: 6, color: '#FFFFFF' }}>
+                  {FLAME_TIER_LABELS[tier]}
+                </Caption>
+              </View>
+            )}
+          </View>
+        </Animated.View>
+
+        {/* Action buttons */}
+        <View style={styles.actionRow}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.actionButton,
+              styles.passButton,
+              { backgroundColor: '#1C1C1E', borderColor: '#3A3A3C' },
+              pressed && { opacity: 0.7 },
+            ]}
+            disabled={acting}
+            onPress={() => onAction('pass')}
+          >
+            <Text style={styles.passIcon}>✕</Text>
+          </Pressable>
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.actionButton,
+              styles.likeButton,
+              { backgroundColor: colors.primary },
+              pressed && { opacity: 0.8 },
+            ]}
+            disabled={acting}
+            onPress={() => onAction('like')}
+          >
+            <Text style={styles.likeIcon}>♥</Text>
+          </Pressable>
         </View>
-      </Animated.View>
-
-      {/* Action buttons */}
-      <View style={styles.actionRow}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.actionButton,
-            styles.passButton,
-            { backgroundColor: '#1C1C1E', borderColor: '#3A3A3C' },
-            pressed && { opacity: 0.7 },
-          ]}
-          disabled={acting}
-          onPress={() => onAction('pass')}
-        >
-          <Text style={styles.passIcon}>✕</Text>
-        </Pressable>
-
-        <Pressable
-          style={({ pressed }) => [
-            styles.actionButton,
-            styles.likeButton,
-            { backgroundColor: colors.primary },
-            pressed && { opacity: 0.8 },
-          ]}
-          disabled={acting}
-          onPress={() => onAction('like')}
-        >
-          <Text style={styles.likeIcon}>♥</Text>
-        </Pressable>
       </View>
     </GestureDetector>
   );

@@ -22,7 +22,7 @@ export function StepHeader({ step, totalSteps = 7, title, subtitle }: StepHeader
       duration: 600,
       easing: Easing.out(Easing.cubic),
     });
-  }, [step]);
+  }, [step, progressWidth]);
 
   const progressAnimStyle = useAnimatedStyle(() => ({
     width: `${progressWidth.value}%`,
