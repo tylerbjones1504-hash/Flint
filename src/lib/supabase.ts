@@ -1,44 +1,41 @@
 import { createClient } from "@supabase/supabase-js";
+import * as SecureStore from "expo-secure-store";
 import type { Database } from "../types/database";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Expo uses EXPO_PUBLIC_ prefix for client-visible env vars.
+// These throw at startup if missing — fail fast rather than silent 401s.
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl) {
-  throw new Error("Missing environment variable: NEXT_PUBLIC_SUPABASE_URL");
+  throw new Error("Missing environment variable: EXPO_PUBLIC_SUPABASE_URL");
 }
 if (!supabaseAnonKey) {
   throw new Error(
-    "Missing environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY"
+    "Missing environment variable: EXPO_PUBLIC_SUPABASE_ANON_KEY"
   );
 }
 
 /**
- * Typed Supabase client for use in browser / React Native contexts.
+ * SecureStore adapter so Supabase auth sessions persist across app restarts.
+ * SecureStore values are limited to 2048 bytes — Supabase sessions fit easily.
+ */
+const SecureStoreAdapter = {
+  getItem: (key: string) => SecureStore.getItemAsync(key),
+  setItem: (key: string, value: string) =>
+    SecureStore.setItemAsync(key, value),
+  removeItem: (key: string) => SecureStore.deleteItemAsync(key),
+};
+
+/**
+ * Typed Supabase client for use in the React Native app.
  * Uses the anon key — all access is governed by RLS policies.
  */
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
+    storage: SecureStoreAdapter,
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true,
+    detectSessionInUrl: false, // must be false in React Native
   },
 });
-
-/**
- * Create a Supabase client with a service role key.
- * NEVER expose this to the client — server-side only (e.g., Next.js API routes,
- * Edge Functions, or backend scripts).
- */
-export function createServiceRoleClient() {
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!serviceRoleKey) {
-    throw new Error("Missing environment variable: SUPABASE_SERVICE_ROLE_KEY");
-  }
-  return createClient<Database>(supabaseUrl!, serviceRoleKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
-}

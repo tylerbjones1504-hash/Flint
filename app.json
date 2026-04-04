@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "Flint",
+    "slug": "flint",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "flint",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.flint.app"
+    },
+    "android": {
+      "package": "com.flint.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

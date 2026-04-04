@@ -1,0 +1,126 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '--- Flint Learnings: General ---' && cat .claude/learnings/general.md 2>/dev/null || true"
+          },
+          {
+            "type": "command",
+            "command": "echo '--- Flint Learnings: Safety ---' && cat .claude/learnings/safety.md 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[hook] File written. Ensure reviewer agent is invoked before marking work complete.'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[hook] Session ending. If any non-trivial change was made, retrospective-coach must be run to log lessons. Skip only for trivial edits (typos, formatting).'"
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '--- Re-injecting Flint Learnings after compaction ---' && cat .claude/learnings/general.md 2>/dev/null || true && cat .claude/learnings/safety.md 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "specialist-supabase",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[hook] specialist-supabase finished. Remind: append learnings to .claude/learnings/supabase.md if non-trivial work was done.'"
+          }
+        ]
+      },
+      {
+        "matcher": "specialist-scoring",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[hook] specialist-scoring finished. Remind: append learnings to .claude/learnings/scoring.md if non-trivial work was done.'"
+          }
+        ]
+      },
+      {
+        "matcher": "specialist-safety",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[hook] specialist-safety finished. Safety-sensitive work — reviewer must sign off before this is considered complete.'"
+          }
+        ]
+      },
+      {
+        "matcher": "specialist-product",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[hook] specialist-product finished. Remind: append learnings to .claude/learnings/product.md if non-trivial work was done.'"
+          }
+        ]
+      },
+      {
+        "matcher": "specialist-typescript",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[hook] specialist-typescript finished. If types were regenerated, verify database.ts is consistent with current schema.'"
+          }
+        ]
+      },
+      {
+        "matcher": "builder",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[hook] builder finished. Reviewer must now be invoked — do not skip.'"
+          }
+        ]
+      },
+      {
+        "matcher": "critical-thinker",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[hook] critical-thinker finished. Builder may only proceed if verdict is APPROVED or CONDITIONAL (all conditions resolved).'"
+          }
+        ]
+      },
+      {
+        "matcher": "reviewer",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[hook] reviewer finished. If verdict is PASS or CONDITIONAL PASS (resolved), run retrospective-coach next.'"
+          }
+        ]
+      }
+    ]
+  }
+}
