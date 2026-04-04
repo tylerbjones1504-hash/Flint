@@ -35,6 +35,7 @@ Core goals:
 
 ## Never do these without explicit approval
 - Commit secrets, tokens, or `.env` values.
+- Modify root `CLAUDE.md`, `.claude/agents/`, or `.claude/settings.json` (workflow and hook configuration).
 - Remove moderation, blocking, reporting, or privacy-related flows.
 - Delete migration history.
 - Disable analytics, audit, or compliance events if they already exist.

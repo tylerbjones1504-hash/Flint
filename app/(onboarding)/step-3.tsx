@@ -32,8 +32,10 @@ const NO_SUBGROUP_FAITHS: FaithTradition[] = ['not_religious'];
 export default function Step3() {
   const { data, update } = useOnboarding();
   const [error, setError] = useState<string | null>(null);
+  const [subgroupError, setSubgroupError] = useState<string | null>(null);
   const [subgroups, setSubgroups] = useState<FaithSubgroup[]>([]);
   const [loadingSubgroups, setLoadingSubgroups] = useState(false);
+  const [subgroupFetchKey, setSubgroupFetchKey] = useState(0);
 
   // Fetch subgroups whenever faith changes
   useEffect(() => {
@@ -43,18 +45,41 @@ export default function Step3() {
       return;
     }
 
+    const parentFaith = data.faith;
+    let cancelled = false;
     setLoadingSubgroups(true);
-    supabase
-      .from('faith_subgroups')
-      .select('*')
-      .eq('parent_faith', data.faith)
-      .eq('is_active', true)
-      .order('sort_order')
-      .then(({ data: rows }) => {
-        setSubgroups(rows ?? []);
-        setLoadingSubgroups(false);
-      });
-  }, [data.faith]);
+    setSubgroupError(null);
+
+    void (async () => {
+      try {
+        const { data: rows, error: qError } = await supabase
+          .from('faith_subgroups')
+          .select('*')
+          .eq('parent_faith', parentFaith)
+          .eq('is_active', true)
+          .order('sort_order');
+        if (cancelled) return;
+        if (qError) {
+          setSubgroups([]);
+          setSubgroupError('Could not load faith subgroups. Check your connection and try again.');
+        } else {
+          setSubgroups(rows ?? []);
+        }
+      } catch {
+        if (cancelled) return;
+        setSubgroups([]);
+        setSubgroupError('Could not load faith subgroups. Check your connection and try again.');
+      } finally {
+        if (!cancelled) {
+          setLoadingSubgroups(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [data.faith, subgroupFetchKey]);
 
   function handleFaithSelect(faith: FaithTradition) {
     // Reset subgroup when faith changes
@@ -88,6 +113,12 @@ export default function Step3() {
           <Text style={{ fontWeight: '600', marginTop: 20, marginBottom: 8 }}>
             Subgroup (optional)
           </Text>
+          {subgroupError && subgroups.length === 0 && !loadingSubgroups ? (
+            <View style={{ marginBottom: 12 }}>
+              <Text style={{ color: '#c00', marginBottom: 8 }}>{subgroupError}</Text>
+              <Button title="Retry" onPress={() => setSubgroupFetchKey((k) => k + 1)} />
+            </View>
+          ) : null}
           {loadingSubgroups ? (
             <ActivityIndicator />
           ) : (

@@ -21,16 +21,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const { data: sessionData, error } = await supabase.auth.getSession();
+        if (cancelled) return;
+        if (error) {
+          setSession(null);
+        } else {
+          setSession(sessionData.session);
+        }
+      } catch {
+        if (cancelled) return;
+        setSession(null);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    })();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signOut = async () => {

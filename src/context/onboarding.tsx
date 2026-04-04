@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useCallback, useContext, useState } from 'react';
 import type {
   Gender,
   SexualOrientation,
@@ -32,11 +32,14 @@ export type OnboardingData = {
   bio: string;
   // Step 6: Prompts (0–3)
   prompts: OnboardingPrompt[];
-  // Step 7: Preferences
+  // Step 7: Preferences + location (for profile matching / display)
   preferred_age_min: number;
   preferred_age_max: number;
   max_distance_km: number;
   preferred_genders: Gender[];
+  location_city: string;
+  location_state: string;
+  location_country: string;
 };
 
 const defaultData: OnboardingData = {
@@ -55,6 +58,9 @@ const defaultData: OnboardingData = {
   preferred_age_max: 35,
   max_distance_km: 50,
   preferred_genders: [],
+  location_city: '',
+  location_state: '',
+  location_country: 'US',
 };
 
 type OnboardingContextType = {
@@ -72,11 +78,11 @@ const OnboardingContext = createContext<OnboardingContextType>({
 export function OnboardingProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<OnboardingData>(defaultData);
 
-  const update = (partial: Partial<OnboardingData>) => {
+  const update = useCallback((partial: Partial<OnboardingData>) => {
     setData((prev) => ({ ...prev, ...partial }));
-  };
+  }, []);
 
-  const reset = () => setData(defaultData);
+  const reset = useCallback(() => setData(defaultData), []);
 
   return (
     <OnboardingContext.Provider value={{ data, update, reset }}>

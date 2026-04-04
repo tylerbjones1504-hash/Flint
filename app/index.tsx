@@ -16,15 +16,34 @@ export default function Index() {
       return;
     }
 
-    supabase
-      .from('profiles')
-      .select('id')
-      .eq('id', session.user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        setHasProfile(!!data);
-        setChecking(false);
-      });
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        if (cancelled) return;
+        if (error) {
+          setHasProfile(false);
+        } else {
+          setHasProfile(!!data);
+        }
+      } catch {
+        if (cancelled) return;
+        setHasProfile(false);
+      } finally {
+        if (!cancelled) {
+          setChecking(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [session, loading]);
 
   if (loading || checking) {

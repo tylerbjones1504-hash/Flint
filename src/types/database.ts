@@ -92,7 +92,7 @@ export type ReportReason =
 // Table row types
 // ---------------------------------------------------------------------------
 
-export interface Profile {
+export interface Profile extends Record<string, unknown> {
   id: string;
   created_at: string;
   updated_at: string;
@@ -122,7 +122,7 @@ export interface Profile {
   last_active_at: string | null;
 }
 
-export interface ProfilePhoto {
+export interface ProfilePhoto extends Record<string, unknown> {
   id: string;
   profile_id: string;
   created_at: string;
@@ -133,7 +133,7 @@ export interface ProfilePhoto {
   height: number | null;
 }
 
-export interface FaithSubgroup {
+export interface FaithSubgroup extends Record<string, unknown> {
   id: string;
   created_at: string;
   parent_faith: FaithTradition;
@@ -143,7 +143,7 @@ export interface FaithSubgroup {
   is_active: boolean;
 }
 
-export interface PromptTemplate {
+export interface PromptTemplate extends Record<string, unknown> {
   id: string;
   created_at: string;
   prompt_text: string;
@@ -152,7 +152,7 @@ export interface PromptTemplate {
   display_order: number;
 }
 
-export interface ProfilePrompt {
+export interface ProfilePrompt extends Record<string, unknown> {
   id: string;
   profile_id: string;
   template_id: string | null;
@@ -163,7 +163,7 @@ export interface ProfilePrompt {
   updated_at: string;
 }
 
-export interface UserPreferences {
+export interface UserPreferences extends Record<string, unknown> {
   id: string;
   profile_id: string;
   updated_at: string;
@@ -182,7 +182,7 @@ export interface UserPreferences {
   weight_distance: number;
 }
 
-export interface Like {
+export interface Like extends Record<string, unknown> {
   id: string;
   created_at: string;
   actor_id: string;
@@ -191,7 +191,7 @@ export interface Like {
   liked_on: string | null;
 }
 
-export interface Match {
+export interface Match extends Record<string, unknown> {
   id: string;
   created_at: string;
   updated_at: string;
@@ -208,7 +208,7 @@ export interface Match {
   relationship_mode_activated_at: string | null;
 }
 
-export interface Conversation {
+export interface Conversation extends Record<string, unknown> {
   id: string;
   match_id: string;
   created_at: string;
@@ -220,7 +220,7 @@ export interface Conversation {
   commons_revealed: boolean;
 }
 
-export interface Message {
+export interface Message extends Record<string, unknown> {
   id: string;
   conversation_id: string;
   sender_id: string;
@@ -231,14 +231,14 @@ export interface Message {
   is_priority: boolean;
 }
 
-export interface CommonsPrompt {
+export interface CommonsPrompt extends Record<string, unknown> {
   id: string;
   created_at: string;
   prompt_template: string;
   is_active: boolean;
 }
 
-export interface CommonsAnswer {
+export interface CommonsAnswer extends Record<string, unknown> {
   id: string;
   conversation_id: string;
   profile_id: string;
@@ -246,7 +246,7 @@ export interface CommonsAnswer {
   created_at: string;
 }
 
-export interface CompatibilityScore {
+export interface CompatibilityScore extends Record<string, unknown> {
   id: string;
   profile_id_1: string;
   profile_id_2: string;
@@ -256,13 +256,13 @@ export interface CompatibilityScore {
   score_breakdown: Json | null;
 }
 
-export interface SparkCreditBalance {
+export interface SparkCreditBalance extends Record<string, unknown> {
   profile_id: string;
   balance: number;
   updated_at: string;
 }
 
-export interface SparkCreditTransaction {
+export interface SparkCreditTransaction extends Record<string, unknown> {
   id: string;
   profile_id: string;
   created_at: string;
@@ -272,7 +272,7 @@ export interface SparkCreditTransaction {
   reference_id: string | null;
 }
 
-export interface PremiumUnlock {
+export interface PremiumUnlock extends Record<string, unknown> {
   id: string;
   profile_id: string;
   purchased_at: string;
@@ -281,14 +281,14 @@ export interface PremiumUnlock {
   is_valid: boolean;
 }
 
-export interface Block {
+export interface Block extends Record<string, unknown> {
   id: string;
   blocker_id: string;
   blocked_id: string;
   created_at: string;
 }
 
-export interface Report {
+export interface Report extends Record<string, unknown> {
   id: string;
   reporter_id: string;
   reported_id: string;
@@ -313,30 +313,35 @@ export interface Database {
             Pick<Profile, "created_at" | "updated_at" | "faith_subgroup_id">
           >;
         Update: Partial<Omit<Profile, "id">>;
+        Relationships: [];
       };
       profile_photos: {
         Row: ProfilePhoto;
         Insert: Omit<ProfilePhoto, "id" | "created_at"> &
           Partial<Pick<ProfilePhoto, "id" | "created_at">>;
         Update: Partial<Omit<ProfilePhoto, "id" | "profile_id">>;
+        Relationships: [];
       };
       faith_subgroups: {
         Row: FaithSubgroup;
         /** Seeded / service-role only — no client INSERT policy. */
         Insert: never;
         Update: never;
+        Relationships: [];
       };
       prompt_templates: {
         Row: PromptTemplate;
         Insert: Omit<PromptTemplate, "id" | "created_at"> &
           Partial<Pick<PromptTemplate, "id" | "created_at">>;
         Update: Partial<Omit<PromptTemplate, "id">>;
+        Relationships: [];
       };
       profile_prompts: {
         Row: ProfilePrompt;
         Insert: Omit<ProfilePrompt, "id" | "created_at" | "updated_at"> &
           Partial<Pick<ProfilePrompt, "id" | "created_at" | "updated_at">>;
         Update: Partial<Omit<ProfilePrompt, "id" | "profile_id">>;
+        Relationships: [];
       };
       user_preferences: {
         Row: UserPreferences;
@@ -351,42 +356,49 @@ export interface Database {
             >
           >;
         Update: Partial<Omit<UserPreferences, "id" | "profile_id">>;
+        Relationships: [];
       };
       likes: {
         Row: Like;
         Insert: Omit<Like, "id" | "created_at"> &
           Partial<Pick<Like, "id" | "created_at">>;
-        Update: never;
+        Update: Record<string, unknown>;
+        Relationships: [];
       };
       matches: {
         Row: Match;
         Insert: Omit<Match, "id" | "created_at" | "updated_at"> &
           Partial<Pick<Match, "id" | "created_at" | "updated_at">>;
         Update: Partial<Omit<Match, "id" | "profile_id_1" | "profile_id_2">>;
+        Relationships: [];
       };
       conversations: {
         Row: Conversation;
         Insert: Omit<Conversation, "id" | "created_at" | "updated_at"> &
           Partial<Pick<Conversation, "id" | "created_at" | "updated_at">>;
         Update: Partial<Omit<Conversation, "id" | "match_id">>;
+        Relationships: [];
       };
       messages: {
         Row: Message;
         Insert: Omit<Message, "id" | "created_at"> &
           Partial<Pick<Message, "id" | "created_at">>;
         Update: Partial<Pick<Message, "body" | "edited_at" | "is_deleted">>;
+        Relationships: [];
       };
       commons_prompts: {
         Row: CommonsPrompt;
         Insert: Omit<CommonsPrompt, "id" | "created_at"> &
           Partial<Pick<CommonsPrompt, "id" | "created_at">>;
         Update: Partial<Omit<CommonsPrompt, "id">>;
+        Relationships: [];
       };
       commons_answers: {
         Row: CommonsAnswer;
         Insert: Omit<CommonsAnswer, "id" | "created_at"> &
           Partial<Pick<CommonsAnswer, "id" | "created_at">>;
-        Update: never;
+        Update: Record<string, unknown>;
+        Relationships: [];
       };
       compatibility_scores: {
         Row: CompatibilityScore;
@@ -395,35 +407,41 @@ export interface Database {
         Update: Partial<
           Omit<CompatibilityScore, "id" | "profile_id_1" | "profile_id_2">
         >;
+        Relationships: [];
       };
       spark_credit_balances: {
         Row: SparkCreditBalance;
         Insert: Partial<SparkCreditBalance>;
         Update: Partial<Omit<SparkCreditBalance, "profile_id">>;
+        Relationships: [];
       };
       spark_credit_transactions: {
         Row: SparkCreditTransaction;
         Insert: Omit<SparkCreditTransaction, "id" | "created_at"> &
           Partial<Pick<SparkCreditTransaction, "id" | "created_at">>;
-        Update: never;
+        Update: Record<string, unknown>;
+        Relationships: [];
       };
       flint_premium_unlocks: {
         Row: PremiumUnlock;
         Insert: Omit<PremiumUnlock, "id" | "purchased_at"> &
           Partial<Pick<PremiumUnlock, "id" | "purchased_at">>;
         Update: Partial<Pick<PremiumUnlock, "is_valid">>;
+        Relationships: [];
       };
       blocks: {
         Row: Block;
         Insert: Omit<Block, "id" | "created_at"> &
           Partial<Pick<Block, "id" | "created_at">>;
-        Update: never;
+        Update: Record<string, unknown>;
+        Relationships: [];
       };
       reports: {
         Row: Report;
         Insert: Omit<Report, "id" | "created_at"> &
           Partial<Pick<Report, "id" | "created_at">>;
         Update: Partial<Pick<Report, "reviewed" | "reviewed_at">>;
+        Relationships: [];
       };
     };
     Views: Record<string, never>;

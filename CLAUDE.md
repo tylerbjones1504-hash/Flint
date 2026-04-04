@@ -2,7 +2,7 @@
 
 ## Core rules
 - Never commit directly to `main` or `master`. Use feature branches.
-- Never modify `.claude/agents/` or `.claude/settings.json` without explicit human approval.
+- Never modify `.claude/agents/`, `.claude/settings.json`, or this root `CLAUDE.md` without explicit human approval.
 - Tests must pass before any work is considered complete.
 - Prefer small, reviewable diffs over large sweeping changes.
 - All significant decisions must be logged; ephemeral reasoning is not enough.

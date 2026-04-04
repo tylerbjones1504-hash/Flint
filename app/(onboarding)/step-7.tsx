@@ -34,6 +34,9 @@ export default function Step7() {
     if (min > max) { setError('Min age must be ≤ max age'); return false; }
     if (isNaN(dist) || dist < 1 || dist > 500) { setError('Distance must be 1–500 km'); return false; }
     if (data.preferred_genders.length === 0) { setError('Select at least one gender preference'); return false; }
+    if (!data.location_city.trim()) { setError('City is required for your profile'); return false; }
+    const cc = data.location_country.trim().toUpperCase();
+    if (cc.length !== 2) { setError('Use a 2-letter country code (e.g. US, CA)'); return false; }
 
     setError(null);
     return true;
@@ -76,6 +79,34 @@ export default function Step7() {
         keyboardType="number-pad"
         maxLength={3}
         style={{ borderWidth: 1, borderColor: '#ccc', padding: 10, borderRadius: 4, marginBottom: 16 }}
+      />
+
+      <Text style={{ fontWeight: '600', marginBottom: 8 }}>Where you live</Text>
+      <Text style={{ color: '#888', fontSize: 13, marginBottom: 8 }}>
+        Used for matching — approximate location only; exact coordinates can be added later in settings.
+      </Text>
+      <Text style={{ marginBottom: 4 }}>City</Text>
+      <TextInput
+        value={data.location_city}
+        onChangeText={(v) => update({ location_city: v })}
+        placeholder="e.g. Austin"
+        style={{ borderWidth: 1, borderColor: '#ccc', padding: 10, marginBottom: 12, borderRadius: 4 }}
+      />
+      <Text style={{ marginBottom: 4 }}>State / Province (optional)</Text>
+      <TextInput
+        value={data.location_state}
+        onChangeText={(v) => update({ location_state: v })}
+        placeholder="e.g. TX"
+        style={{ borderWidth: 1, borderColor: '#ccc', padding: 10, marginBottom: 12, borderRadius: 4 }}
+      />
+      <Text style={{ marginBottom: 4 }}>Country (ISO code)</Text>
+      <TextInput
+        value={data.location_country}
+        onChangeText={(v) => update({ location_country: v.toUpperCase().slice(0, 2) })}
+        placeholder="US"
+        maxLength={2}
+        autoCapitalize="characters"
+        style={{ borderWidth: 1, borderColor: '#ccc', padding: 10, marginBottom: 16, borderRadius: 4 }}
       />
 
       <Text style={{ fontWeight: '600', marginBottom: 8 }}>I'm interested in</Text>

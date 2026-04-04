@@ -1,9 +1,9 @@
 /**
  * Onboarding Complete
  * Writes profile, user_preferences, and profile_prompts to Supabase.
- * Runs once on mount — shows a spinner while working, error state on failure.
+ * Runs when user + onboarding data are ready — shows a spinner while working, error state on failure.
  */
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, ActivityIndicator, Button, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
@@ -15,15 +15,14 @@ export default function OnboardingComplete() {
   const { data, reset } = useOnboarding();
   const [error, setError] = useState<string | null>(null);
   const [detail, setDetail] = useState<string | null>(null);
+  /** Ensures we only auto-submit once per visit; `reset()` updates `data` and would otherwise retrigger the effect. */
+  const didAutoSubmitRef = useRef(false);
 
-  useEffect(() => {
-    if (!user) return;
-    createProfile();
-  }, [user]);
-
-  async function createProfile() {
+  const createProfile = useCallback(async () => {
     if (!user) return;
     setError(null);
+
+    const country = data.location_country.trim().toUpperCase() || 'US';
 
     // ── 1. Insert profile ──────────────────────────────────────────────────────
     const { error: profileError } = await supabase.from('profiles').insert({
@@ -38,7 +37,11 @@ export default function OnboardingComplete() {
       faith_subgroup_id: data.faith_subgroup_id ?? null,
       politics: data.politics!,
       bio: data.bio.trim() || null,
-      location_country: 'US', // TODO: detect / ask during onboarding
+      location_city: data.location_city.trim() || null,
+      location_state: data.location_state.trim() || null,
+      location_country: country,
+      latitude: null,
+      longitude: null,
       match_mode: 'spark',
       relationship_mode_active: false,
       is_active: true,
@@ -65,6 +68,8 @@ export default function OnboardingComplete() {
       weight_politics: 20,
       weight_relationship_goal: 30,
       weight_lifestyle: 10,
+      weight_values: 10,
+      weight_distance: 10,
     });
 
     if (prefError) {
@@ -95,7 +100,17 @@ export default function OnboardingComplete() {
 
     reset();
     router.replace('/(main)/');
-  }
+  }, [user, data, reset]);
+
+  useEffect(() => {
+    if (!user) {
+      didAutoSubmitRef.current = false;
+      return;
+    }
+    if (didAutoSubmitRef.current) return;
+    didAutoSubmitRef.current = true;
+    void createProfile();
+  }, [user, createProfile]);
 
   if (error) {
     return (
@@ -107,7 +122,7 @@ export default function OnboardingComplete() {
         {detail ? (
           <Text style={{ color: '#888', fontSize: 12, marginBottom: 24 }}>{detail}</Text>
         ) : null}
-        <Button title="Try Again" onPress={createProfile} />
+        <Button title="Try Again" onPress={() => void createProfile()} />
         <View style={{ height: 12 }} />
         <Button title="← Back to Preferences" onPress={() => router.back()} />
       </ScrollView>

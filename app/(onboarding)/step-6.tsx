@@ -29,20 +29,44 @@ export default function Step6() {
   const { data, update } = useOnboarding();
   const [templates, setTemplates] = useState<PromptTemplate[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    supabase
-      .from('prompt_templates')
-      .select('*')
-      .eq('is_active', true)
-      .order('is_flint_branded', { ascending: false })
-      .order('display_order')
-      .then(({ data: rows }) => {
-        setTemplates(rows ?? []);
-        setLoading(false);
-      });
+    let cancelled = false;
+    setLoadError(null);
+    setLoading(true);
+
+    void (async () => {
+      try {
+        const { data: rows, error } = await supabase
+          .from('prompt_templates')
+          .select('*')
+          .eq('is_active', true)
+          .order('is_flint_branded', { ascending: false })
+          .order('display_order');
+        if (cancelled) return;
+        if (error) {
+          setTemplates([]);
+          setLoadError('Could not load prompts. Check your connection and try again.');
+        } else {
+          setTemplates(rows ?? []);
+        }
+      } catch {
+        if (cancelled) return;
+        setTemplates([]);
+        setLoadError('Could not load prompts. Check your connection and try again.');
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   function addPrompt(template: PromptTemplate) {
@@ -80,6 +104,41 @@ export default function Step6() {
       <Text style={{ color: '#888', fontSize: 13, marginBottom: 24 }}>
         {data.prompts.length}/{MAX_PROMPTS} prompts added
       </Text>
+
+      {loadError ? (
+        <View style={{ marginBottom: 16 }}>
+          <Text style={{ color: '#c00', marginBottom: 8 }}>{loadError}</Text>
+          <Button
+            title="Retry"
+            onPress={() => {
+              setLoadError(null);
+              setLoading(true);
+              void (async () => {
+                try {
+                  const { data: rows, error } = await supabase
+                    .from('prompt_templates')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('is_flint_branded', { ascending: false })
+                    .order('display_order');
+                  if (error) {
+                    setTemplates([]);
+                    setLoadError('Could not load prompts. Check your connection and try again.');
+                  } else {
+                    setTemplates(rows ?? []);
+                    setLoadError(null);
+                  }
+                } catch {
+                  setTemplates([]);
+                  setLoadError('Could not load prompts. Check your connection and try again.');
+                } finally {
+                  setLoading(false);
+                }
+              })();
+            }}
+          />
+        </View>
+      ) : null}
 
       {loading ? (
         <ActivityIndicator />
