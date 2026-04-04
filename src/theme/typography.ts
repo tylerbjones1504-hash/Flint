@@ -39,12 +39,14 @@ export const typography: Record<TypographyVariant, TextStyle> = {
     lineHeight: 28,
   },
   subheading: {
+    fontFamily: fontFamilies.displaySemiBold,
     fontSize: 16,
     fontWeight: '600',
     letterSpacing: 0.1,
     lineHeight: 24,
   },
   body: {
+    fontFamily: fontFamilies.body,
     fontSize: 16,
     fontWeight: '400',
     letterSpacing: 0,
